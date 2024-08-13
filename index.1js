@@ -1,0 +1,119 @@
+document.getElementById("weatherForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const searchType = document.querySelector('input[name="searchType"]:checked').value;
+    let city;
+    if (searchType === "city") {
+        city = document.getElementById("cityInput").value;
+        const countryCode = document.getElementById("countryCodeInput").value; // Nuevo campo de entrada para el código del país
+        city = `q=${city},${countryCode}`; // Añade 'q=' antes de la consulta y el código del país después
+    } else {
+        const lat = parseFloat(document.getElementById("latInput").value);
+        const lon = parseFloat(document.getElementById("lonInput").value);
+        if (isNaN(lat) || isNaN(lon)) {
+            alert("Por favor ingrese valores numéricos para la latitud y la longitud.");
+            return;
+        }
+        city = `lat=${lat}&lon=${lon}`;
+    }
+    const units = document.getElementById("unitsSelect").value;
+    const lang = document.getElementById("langSelect").value;
+    getWeather(city, units, lang);
+});
+
+document.getElementById("clearTableBtn").addEventListener("click", function () {
+    clearTable();
+});
+
+document.getElementById("clearStorageBtn").addEventListener("click", function () {
+    clearLocalStorage();
+});
+
+async function getWeather(query, units, lang) {
+    try {
+        const response = await fetch(`http://api.openweathermap.org/data/2.5/weather?${query}&appid=38ce0c4bff518a76b6f3b8551e781488&units=${units}&lang=${lang}`);
+        const data = await response.json();
+        displayWeather(data);
+        saveToLocalStorage(data);
+    } catch (error) {
+        console.error("Error al consultar el clima:", error);
+    }
+}
+
+
+function displayWeather(weatherData) {
+    const container = document.getElementById("weatherContainer");
+    if (weatherData.weather && weatherData.weather.length > 0) {
+        const iconUrl = `https://api.openweathermap.org/img/w/${weatherData.weather[0].icon}.png`;
+        const weatherDiv = document.createElement('div');
+        weatherDiv.innerHTML = `
+            <h2>${weatherData.name}, ${weatherData.sys.country}</h2>
+            <p>Latitud: ${weatherData.coord.lat}</p>
+            <p>Longitud: ${weatherData.coord.lon}</p>
+            <p>Clima Principal: ${weatherData.weather[0].main}</p>
+            <p>Descripción del Clima: ${weatherData.weather[0].description}</p>
+            <p>Humedad (%): ${weatherData.main.humidity}</p>
+            <img src="${iconUrl}" alt="Icono del Clima">
+        `;
+        container.appendChild(weatherDiv);
+    } else {
+        const errorDiv = document.createElement('div');
+        errorDiv.innerHTML = "<p>No se encontraron datos meteorológicos para la ubicación especificada.</p>";
+        container.appendChild(errorDiv);
+    }
+}
+
+
+window.onload = function() {
+    // Recuperar los datos del localStorage
+    const storedWeatherData = JSON.parse(localStorage.getItem('weatherData'));
+    // Si hay datos guardados, mostrarlos en la tabla
+    if (storedWeatherData) {
+        const table = document.getElementById('weatherTableData');
+        storedWeatherData.forEach(weatherData => {
+            const row = table.insertRow(-1);
+            const countryCell = row.insertCell(0);
+            const cityCell = row.insertCell(1);
+            const latCell = row.insertCell(2);
+            const lonCell = row.insertCell(3);
+            const mainCell = row.insertCell(4);
+            const descCell = row.insertCell(5);
+            const humidityCell = row.insertCell(6);
+            const iconCell = row.insertCell(7);
+            countryCell.textContent = weatherData.sys.country;
+            cityCell.textContent = weatherData.name;
+            latCell.textContent = weatherData.coord.lat;
+            lonCell.textContent = weatherData.coord.lon;
+            mainCell.textContent = weatherData.weather[0].main;
+            descCell.textContent = weatherData.weather[0].description;
+            humidityCell.textContent = weatherData.main.humidity;
+            const image = document.createElement('img');
+            image.src = `https://api.openweathermap.org/img/w/${weatherData.weather[0].icon}.png`;
+            image.alt = "Icono del Clima";
+            iconCell.appendChild(image);
+        });
+    }
+}
+
+
+function clearTable() {
+    const table = document.getElementById("weatherTable");
+    table.innerHTML = "";
+}
+
+function saveToLocalStorage(data) {
+    localStorage.setItem("weatherData", JSON.stringify(data));
+}
+
+function clearLocalStorage() {
+    localStorage.removeItem("weatherData");
+}
+
+document.getElementById("cityRadio").addEventListener("change", function () {
+    document.getElementById("cityInputContainer").style.display = "block";
+    document.getElementById("coordInputsContainer").style.display = "none";
+});
+
+document.getElementById("coordRadio").addEventListener("change", function () {
+    document.getElementById("cityInputContainer").style.display = "none";
+    document.getElementById("coordInputsContainer").style.display = "block";
+});

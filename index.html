@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Clima</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Consulta de Clima</h1>
+        <div class="mt-4">
+            <form id="weatherForm">
+                <div class="mb-3">
+                    <input type="radio" id="cityRadio" name="searchType" value="city" checked>
+                    <label for="cityRadio">Por nombre de ciudad</label>
+                    <input type="radio" id="coordRadio" name="searchType" value="coordinates">
+                    <label for="coordRadio">Por coordenadas (Latitud, Longitud)</label>
+                </div>
+                <div class="mb-3" id="cityInputContainer">
+                    <label for="cityInput" class="form-label">Ciudad:</label>
+                    <input type="text" class="form-control" id="cityInput" placeholder="Ingrese el nombre de la ciudad" required>
+                    <label for="countryCodeInput" class="form-label">Código del país:</label>
+                    <input type="text" class="form-control" id="countryCodeInput" placeholder="Ingrese el código del país" required>
+                </div>
+                <div class="mb-3" id="coordInputsContainer" style="display: none;">
+                    <label for="latInput" class="form-label">Latitud:</label>
+                    <input type="int" class="form-control" id="latInput" placeholder="Ingrese la latitud">
+                    <label for="lonInput" class="form-label">Longitud:</label>
+                    <input type="int" class="form-control" id="lonInput" placeholder="Ingrese la longitud">
+                </div>
+                <div class="mb-3">
+                    <label for="unitsSelect" class="form-label">Unidades:</label>
+                    <select class="form-select" id="unitsSelect">
+                        <option value="metric">Métrico</option>
+                        <option value="imperial">Imperial</option>
+                        <option value="standard">Standard</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="langSelect" class="form-label">Idioma:</label>
+                    <select class="form-select" id="langSelect">
+                        <option value="es">Español</option>
+                        <option value="en">Inglés</option>
+                        <option value="fr">Francés</option>
+                        <option value="de">Alemán</option>
+                        <option value="ja">Japonés</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Obtener Clima</button>
+                <button id="clearform" onclick="clearForm()" class="btn btn-danger">Limpiar Formulario</button>
+            </form>
+            
+        </div>
+        <div id="weatherInfoContainer" class="mt-5"></div>
+        <div id="weatherTableContainer" class="mt-3">
+            <h2>Información del Clima</h2>
+            <div id="weatherContainer"></div>
+            <table id="weatherTable" class="table table-bordered mt-3">
+                <thead>
+                    <tr>
+                        <th>Ciudad</th>
+                        <th>País</th>
+                        <th>Latitud</th>
+                        <th>Longitud</th>
+                        <th>Clima Principal</th>
+                        <th>Descripción del Clima</th>
+                        <th>Humedad (%)</th>
+                        <th>Icono</th>
+                    </tr>
+                </thead>
+                <tbody id="weatherTableBody"></tbody>
+            </table>
+        </div>
+        <div class="mt-5">
+            <button id="clearTableBtn" class="btn btn-danger me-3">Limpiar Tabla</button>
+            <button id="clearStorageBtn" class="btn btn-danger">Limpiar Almacenamiento Local</button>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>
